@@ -1,39 +1,56 @@
-var express = require('express');
-var bodyParser = require('body-parser');
+const express = require('express');
+const bodyParser = require('body-parser');
+const app = express();
 
-var app = express();
+const posts = require('./controllers/posts')(app);
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
-// Middleware
+// Set db
+const db = require('./data/reddit-db');
+
+// middleware
 const exphbs = require('express-handlebars');
 app.engine('handlebars', exphbs.engine());
 app.set('view engine', 'handlebars');
 
-
-
 app.use(express.urlencoded({ extended: true }));
 
+// home
 app.get('/', function (req, res) {
     res.render('home');
 });
 
-// CASES RESOURCE
+// new
+app.post('/posts/new', (req, res) => {
+    // INSTANTIATE INSTANCE OF POST MODEL
+    const post = new Post(req.body);
 
-// NEW
-app.get('/cases/new', (req, res) => {
-  res.render('cases-new', { case: {} });
-})
+    // SAVE INSTANCE OF POST MODEL TO DB AND REDIRECT TO THE ROOT
+    post.save()
+      .then(() => {
+        res.redirect('/')
+      })
+      .catch(err => console.log(err))
+  });
 
-// CREATE
-app.post('/cases', (req, res) => {
-  console.log("hiya")
+// create
+const Post = require('./models/post');
 
-  const caseId = "3";
-  res.redirect(`/cases/${caseId}`)
-});
+module.exports = (app) => {
 
-// INDEX
+  // CREATE
+  app.post('/posts/new', (req, res) => {
+    // INSTANTIATE INSTANCE OF POST MODEL
+    const post = new Post(req.body);
 
-// SHOW
+    // SAVE INSTANCE OF POST MODEL TO DB AND REDIRECT TO THE ROOT
+    post.save(() => res.redirect('/'));
+  });
+
+};
+
+// show
 app.get('/cases/:id', (req, res) => {
     const id = req.params.id;
     const caseData = fetchCaseData(id);
@@ -41,22 +58,23 @@ app.get('/cases/:id', (req, res) => {
     res.render('cases-show', { case: caseData });
   });
   
-// EDIT
+// edit
 app.get('/cases/:id/edit', (req, res) => {
   // find the case
   // render edit form
 })
 
-// UPDATE
+// update
 app.put('/cases/:id', (req, res) => {
   // update the case
   // redirect show
 })
 
-// DESTROY
+// destroy
 app.delete('/cases/:id', (req, res) => {
   // delete the case
   // redirect to index
 })
 
+// port
 app.listen(3000);
