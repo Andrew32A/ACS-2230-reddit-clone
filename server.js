@@ -1,80 +1,62 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const exphbs = require('express-handlebars');
+
 const app = express();
 
+// Controllers
 const posts = require('./controllers/posts')(app);
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
 
 // Set db
 const db = require('./data/reddit-db');
 
-// middleware
-const exphbs = require('express-handlebars');
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.engine('handlebars', exphbs.engine());
 app.set('view engine', 'handlebars');
 
-app.use(express.urlencoded({ extended: true }));
-
-// home
-app.get('/', function (req, res) {
-    res.render('home');
+// Home
+app.get('/', (req, res) => {
+  res.render('home');
 });
 
-// new
-app.post('/posts/new', (req, res) => {
-    // INSTANTIATE INSTANCE OF POST MODEL
-    const post = new Post(req.body);
-
-    // SAVE INSTANCE OF POST MODEL TO DB AND REDIRECT TO THE ROOT
-    post.save()
-      .then(() => {
-        res.redirect('/')
-      })
-      .catch(err => console.log(err))
-  });
-
-// create
+// Create
 const Post = require('./models/post');
 
-module.exports = (app) => {
+app.post('/posts/new', (req, res) => {
+  const post = new Post(req.body);
 
-  // CREATE
-  app.post('/posts/new', (req, res) => {
-    // INSTANTIATE INSTANCE OF POST MODEL
-    const post = new Post(req.body);
+  post.save()
+    .then(() => res.redirect('/'))
+    .catch(err => console.log(err));
+});
 
-    // SAVE INSTANCE OF POST MODEL TO DB AND REDIRECT TO THE ROOT
-    post.save(() => res.redirect('/'));
-  });
-
-};
-
-// show
+// Show
 app.get('/cases/:id', (req, res) => {
-    const id = req.params.id;
-    const caseData = fetchCaseData(id);
-  
-    res.render('cases-show', { case: caseData });
-  });
-  
-// edit
+  const id = req.params.id;
+  const caseData = fetchCaseData(id);
+
+  res.render('cases-show', { case: caseData });
+});
+
+// Edit
 app.get('/cases/:id/edit', (req, res) => {
-  // find the case
-  // render edit form
-})
+  // Find the case
+  // Render edit form
+});
 
-// update
+// Update
 app.put('/cases/:id', (req, res) => {
-  // update the case
-  // redirect show
-})
+  // Update the case
+  // Redirect show
+});
 
-// destroy
+// Destroy
 app.delete('/cases/:id', (req, res) => {
-  // delete the case
-  // redirect to index
-})
+  // Delete the case
+  // Redirect to index
+});
 
-// port
+// Port
 app.listen(3000);
