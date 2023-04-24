@@ -8,9 +8,23 @@ module.exports = (app) => {
       .catch((err) => {
         console.log(err.message);
       })
-  })
+  });
+
+  // CREATE
+  app.get('/posts/new', (req, res) => {
+    res.render("posts-new");
+  });
   
-  // LOOK UP THE POST
+  app.post('/posts/new', (req, res) => {
+    console.log(req.body);
+    const post = new Post(req.body);
+  
+    post.save()
+      .then(() => res.redirect('/'))
+      .catch(err => console.log(err));
+  });
+  
+  // SHOW
   app.get('/posts/:id', (req, res) => {
     Post.findById(req.params.id).lean()
       .then((post) => res.render('posts-show', { post }))

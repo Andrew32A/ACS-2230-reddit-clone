@@ -1,62 +1,29 @@
+// Dependencies, models, etc
 const express = require('express');
-const bodyParser = require('body-parser');
 const exphbs = require('express-handlebars');
+// const cookieParser = require('cookie-parser');
 
+// Set express
 const app = express();
-
-// Controllers
-const posts = require('./controllers/posts')(app);
+app.use(express.static("public"));
 
 // Set db
 const db = require('./data/reddit-db');
 
 // Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 app.engine('handlebars', exphbs.engine());
 app.set('view engine', 'handlebars');
+app.set("views", "./views")
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+// [cookie here]
 
-// Home
-app.get('/', (req, res) => {
-  res.render('home');
-});
-
-// Create
-const Post = require('./models/post');
-
-app.post('/posts/new', (req, res) => {
-  const post = new Post(req.body);
-
-  post.save()
-    .then(() => res.redirect('/'))
-    .catch(err => console.log(err));
-});
-
-// Show
-app.get('/cases/:id', (req, res) => {
-  const id = req.params.id;
-  const caseData = fetchCaseData(id);
-
-  res.render('cases-show', { case: caseData });
-});
-
-// Edit
-app.get('/cases/:id/edit', (req, res) => {
-  // Find the case
-  // Render edit form
-});
-
-// Update
-app.put('/cases/:id', (req, res) => {
-  // Update the case
-  // Redirect show
-});
-
-// Destroy
-app.delete('/cases/:id', (req, res) => {
-  // Delete the case
-  // Redirect to index
-});
+// Controllers
+require('./controllers/posts')(app);
+// [require comments and auth here]
 
 // Port
 app.listen(3000);
+
+// Export app (for tests)
+module.exports = app;
