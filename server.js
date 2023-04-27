@@ -1,4 +1,5 @@
 // Dependencies, models, etc
+require('dotenv').config();
 const express = require('express');
 const exphbs = require('express-handlebars');
 // const cookieParser = require('cookie-parser');
@@ -21,7 +22,7 @@ app.use(express.urlencoded({ extended: false }));
 // Controllers
 require('./controllers/posts')(app);
 require('./controllers/comments')(app);
-// [require comments and auth here]
+require('./controllers/auth.js')(app);
 
 // Port
 app.listen(3000);
