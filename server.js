@@ -2,7 +2,8 @@
 require('dotenv').config();
 const express = require('express');
 const exphbs = require('express-handlebars');
-// const cookieParser = require('cookie-parser');
+const checkAuth = require("./middleware/checkAuth");
+const cookieParser = require('cookie-parser');
 
 // Set express
 const app = express();
@@ -17,7 +18,8 @@ app.set('view engine', 'handlebars');
 app.set("views", "./views")
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-// [cookie here]
+app.use(cookieParser())
+app.use(checkAuth)
 
 // Controllers
 require('./controllers/posts')(app);
