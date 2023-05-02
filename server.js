@@ -20,22 +20,12 @@ app.set("views", "./views");
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(checkAuth);
-app.use(express.static("public"));
 
 // Require controllers
+require("./controllers/auth.js")(app);
 require("./controllers/posts")(app);
 require("./controllers/comments.js")(app);
-require("./controllers/auth.js")(app);
 require("./controllers/replies.js")(app);
-
-app.get("/", (req, res) => {
-  res.render("home");
-});
-
-// Render the form
-app.get("/posts/new", (req, res) => {
-  res.render("posts-new");
-});
 
 app.listen(3000);
 

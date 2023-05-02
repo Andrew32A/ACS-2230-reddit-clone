@@ -12,6 +12,7 @@ const userSchema = new Schema(
 
 // Must use function expressions here! ES6 => functions do not bind this!
 userSchema.pre("save", function (next) {
+  // ENCRYPT PASSWORD
   const user = this;
   if (!user.isModified("password")) {
     return next();
